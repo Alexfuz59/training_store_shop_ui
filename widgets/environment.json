@@ -1,1 +1,1 @@
-[{"values":["Linux-6.5.0-1018-azure-x86_64-with-glibc2.35"],"name":"OC"},{"values":["3.12.3"],"name":"Python"},{"values":["2.23.1"],"name":"Allure_version"},{"values":["firefox"],"name":"Browser"},{"values":["124.0"],"name":"Browser_version"}]
+[{"values":["Linux-6.5.0-1018-azure-x86_64-with-glibc2.35"],"name":"OC"},{"values":["3.12.3"],"name":"Python"},{"values":["2.23.1"],"name":"Allure_version"},{"values":["webkit"],"name":"Browser"},{"values":["17.4"],"name":"Browser_version"}]
