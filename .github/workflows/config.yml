@@ -1,0 +1,302 @@
+name: ui-tests training store
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_target:
+        description: Choose target
+        required: true
+        default: Run tests Chromium
+        type: choice
+        options:
+          - Run tests Chromium
+          - Run tests Firefox
+          - Run tests Webkit
+          - Run All
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Ensure browsers are installed
+        run: python -m playwright install --with-deps
+
+      - name: Run tests Chromium
+        if: "github.event.inputs.deployment_target == 'Run tests Chromium'"
+        env:
+          CARD: ${{ secrets.CARD }}
+        run: pytest -s -v -n=2 --browser chromium  --alluredir=allure-results
+        continue-on-error: true
+
+      - name: Run tests Mozilla Firefox
+        if: "github.event.inputs.deployment_target == 'Run tests Firefox'"
+        env:
+          CARD: ${{ secrets.CARD }}
+        run: pytest -s -v -n=2 --browser firefox --alluredir=allure-results
+        continue-on-error: true
+
+      - name: Run tests Webkit
+        if: "github.event.inputs.deployment_target == 'Run tests Webkit'"
+        env:
+          CARD: ${{ secrets.CARD }}
+        run: pytest -s -v -n=2 --browser webkit --alluredir=allure-results
+        continue-on-error: true
+
+      - name: Run tests All
+        if: "github.event.inputs.deployment_target == 'Run All'"
+        env:
+          CARD: ${{ secrets.CARD }}
+        run: pytest -s -v -n=2 --browser webkit --browser firefox --browser chromium --alluredir=allure-results
+        continue-on-error: true
+
+      - name: Add environment in allure-results
+        run: |
+          sudo pwd
+          sudo cp -R environment.properties allure-results
+
+      - name: Store allure-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+          retention-days: 1
+
+
+  generate-report-Chromium:
+    needs: tests
+    if: "github.event.inputs.deployment_target == 'Run tests Chromium'"
+    runs-on: ubuntu-latest
+    name: Generate-report Chromium
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Checkout repository to GitHub runner
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          path: ./.github/gh-pages
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+
+      - name: Allure report installation
+        run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate Allure report
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+            token: ${{ secrets.CI_TOKEN }}
+            branch: gh-pages
+            folder: allure-report
+            clean: true
+
+      - name: Send message to bot(success)
+        if: ${{ needs.test.outputs.tests_passed == 'true' }}
+        env:
+          CHAT_IDS: ${{ secrets.CHAT_IDS }}
+        run: |
+          IFS=',' read -ra IDS <<< "$CHAT_IDS"
+          for ID in "${IDS[@]}"; do
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: Chromium. Report:https://alexfuz59.github.io/training_store_shop_ui/'
+          done
+
+      - name: Send message to bot(failure)
+        if: ${{ needs.test.outputs.tests_passed != 'true' }}
+        env:
+          CHAT_IDS: ${{ secrets.CHAT_IDS }}
+        run: |
+          IFS=',' read -ra IDS <<< "$CHAT_IDS"
+          for ID in "${IDS[@]}"; do
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: Chromium. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+          done
+
+
+  generate-report-Firefox:
+    needs: tests
+    if: "github.event.inputs.deployment_target == 'Run tests Firefox'"
+    runs-on: ubuntu-latest
+    name: Generate-report Firefox
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Checkout repository to GitHub runner
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages-firefox
+          path: ./.github/gh-pages-firefox
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+
+      - name: Allure report installation
+        run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate Allure report
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          token: ${{ secrets.CI_TOKEN }}
+          branch: gh-pages-firefox
+          folder: allure-report
+          clean: true
+
+      - name: Send message to bot(success)
+        if: ${{ needs.test.outputs.tests_passed == 'true' }}
+        env:
+          CHAT_IDS: ${{ secrets.CHAT_IDS }}
+        run: |
+          IFS=',' read -ra IDS <<< "$CHAT_IDS"
+          for ID in "${IDS[@]}"; do
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: Firefox. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+          done
+
+      - name: Send message to bot(failure)
+        if: ${{ needs.test.outputs.tests_passed != 'true' }}
+        env:
+          CHAT_IDS: ${{ secrets.CHAT_IDS }}
+        run: |
+          IFS=',' read -ra IDS <<< "$CHAT_IDS"
+          for ID in "${IDS[@]}"; do
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: Firefox. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+          done
+          
+
+  generate-report-Webkit:
+    needs: tests
+    if: "github.event.inputs.deployment_target == 'Run tests Webkit'"
+    runs-on: ubuntu-latest
+    name: Generate-report Webkit
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Checkout repository to GitHub runner
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages-webkit
+          path: ./.github/gh-pages-webkit
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+
+      - name: Allure report installation
+        run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate Allure report
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          token: ${{ secrets.CI_TOKEN }}
+          branch: gh-pages-webkit
+          folder: allure-report
+          clean: true
+
+      - name: Send message to bot(success)
+        if: ${{ needs.test.outputs.tests_passed == 'true' }}
+        env:
+          CHAT_IDS: ${{ secrets.CHAT_IDS }}
+        run: |
+          IFS=',' read -ra IDS <<< "$CHAT_IDS"
+          for ID in "${IDS[@]}"; do
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: Webkit. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+          done
+
+      - name: Send message to bot(failure)
+        if: ${{ needs.test.outputs.tests_passed != 'true' }}
+        env:
+          CHAT_IDS: ${{ secrets.CHAT_IDS }}
+        run: |
+          IFS=',' read -ra IDS <<< "$CHAT_IDS"
+          for ID in "${IDS[@]}"; do
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: Webkit. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+          done  
+          
+
+  generate-report-All-browser:
+    needs: tests
+    if: "github.event.inputs.deployment_target == 'Run tests All'"
+    runs-on: ubuntu-latest
+    name: Generate-report All-browsers
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Checkout repository to GitHub runner
+        uses: actions/checkout@v3
+        with:
+          ref: gh-pages-all
+          path: ./.github/gh-pages-all
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+
+      - name: Allure report installation
+        run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate Allure report
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          token: ${{ secrets.CI_TOKEN }}
+          branch: gh-pages-all
+          folder: allure-report
+          clean: true
+
+      - name: Send message to bot(success)
+        if: ${{ needs.test.outputs.tests_passed == 'true' }}
+        env:
+          CHAT_IDS: ${{ secrets.CHAT_IDS }}
+        run: |
+          IFS=',' read -ra IDS <<< "$CHAT_IDS"
+          for ID in "${IDS[@]}"; do
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: All browsers. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+          done
+
+      - name: Send message to bot(failure)
+        if: ${{ needs.test.outputs.tests_passed != 'true' }}
+        env:
+          CHAT_IDS: ${{ secrets.CHAT_IDS }}
+        run: |
+          IFS=',' read -ra IDS <<< "$CHAT_IDS"
+          for ID in "${IDS[@]}"; do
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: All browsers. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+          done
