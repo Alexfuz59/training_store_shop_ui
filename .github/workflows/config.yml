@@ -247,7 +247,7 @@ jobs:
 
   generate-report-All-browser:
     needs: tests
-    if: "github.event.inputs.deployment_target == 'Run tests All'"
+    if: "github.event.inputs.deployment_target == 'Run All'"
     runs-on: ubuntu-latest
     name: Generate-report All-browsers
     steps:
