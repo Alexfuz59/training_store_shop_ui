@@ -150,9 +150,9 @@ class Payment(BasePage):
         elif paid_shipping.is_checked():
             len_price = self.page.locator(self.CURRENCY).count()
             price_str = self.page.locator(self.CURRENCY).nth(len_price - 3).inner_text()
-            price = Decimal(price_str.replace('$', '') \
-                          .replace(',', '.') \
-                          .replace('\xa0', ''))
+            price = Decimal(price_str.replace('$', '')\
+                            .replace(',', '.')\
+                            .replace('\xa0', ''))
             return price
         else:
             raise AssertionError('Broken delivery payment')
@@ -179,8 +179,8 @@ class Payment(BasePage):
 
     @allure.step("Checking successful payment")
     def payment_completed_successful(self):
-        self.expect(self.page, ErrorMessage.ERROR_URL). \
-            to_have_url(Links.PAYMENT_COMPLETED, timeout=10000)
+        self.expect(self.page, ErrorMessage.ERROR_URL)\
+            .to_have_url(Links.PAYMENT_COMPLETED, timeout=10000)
 
     @allure.step("Close modal window")
     def modal_window_close(self):
