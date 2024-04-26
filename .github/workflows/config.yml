@@ -126,7 +126,7 @@ jobs:
         run: |
           IFS=',' read -ra IDS <<< "$CHAT_IDS"
           for ID in "${IDS[@]}"; do
-            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: Chromium. Report:https://alexfuz59.github.io/training_store_shop_ui/'
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: Chromium. Report: https://allure-chromium.netlify.app/'
           done
 
       - name: Send message to bot(failure)
@@ -136,7 +136,7 @@ jobs:
         run: |
           IFS=',' read -ra IDS <<< "$CHAT_IDS"
           for ID in "${IDS[@]}"; do
-            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: Chromium. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: Chromium. Report: https://allure-chromium.netlify.app/ '
           done
 
 
@@ -192,7 +192,7 @@ jobs:
         run: |
           IFS=',' read -ra IDS <<< "$CHAT_IDS"
           for ID in "${IDS[@]}"; do
-            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: Firefox. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: Firefox. Report: https://allure-firefox.netlify.app/ '
           done
 
       - name: Send message to bot(failure)
@@ -202,7 +202,7 @@ jobs:
         run: |
           IFS=',' read -ra IDS <<< "$CHAT_IDS"
           for ID in "${IDS[@]}"; do
-            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: Firefox. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: Firefox. Report: https://allure-firefox.netlify.app/ '
           done
           
 
@@ -258,7 +258,7 @@ jobs:
         run: |
           IFS=',' read -ra IDS <<< "$CHAT_IDS"
           for ID in "${IDS[@]}"; do
-            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: Webkit. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: Webkit. Report: https://allure-webkit.netlify.app/ '
           done
 
       - name: Send message to bot(failure)
@@ -268,7 +268,7 @@ jobs:
         run: |
           IFS=',' read -ra IDS <<< "$CHAT_IDS"
           for ID in "${IDS[@]}"; do
-            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: Webkit. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: Webkit. Report: https://allure-webkit.netlify.app/ '
           done  
           
 
@@ -324,7 +324,7 @@ jobs:
         run: |
           IFS=',' read -ra IDS <<< "$CHAT_IDS"
           for ID in "${IDS[@]}"; do
-            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: All browsers. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='✅Tests UI Training store PASSED. 🌐Browser: All browsers. Report: https://allure-all-browsers.netlify.app/ '
           done
 
       - name: Send message to bot(failure)
@@ -334,5 +334,5 @@ jobs:
         run: |
           IFS=',' read -ra IDS <<< "$CHAT_IDS"
           for ID in "${IDS[@]}"; do
-            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: All browsers. Report:https://alexfuz59.github.io/training_store_shop_ui/ '
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TOKEN_TG }}/sendMessage -F chat_id=$ID -F text='🆘Tests UI Training store FAILED. 🌐Browser: All browsers. Report: https://allure-all-browsers.netlify.app/ '
           done
