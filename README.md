@@ -1,6 +1,7 @@
 # training_store_shop_ui
 
 <center>
+ 
 [![Python](https://img.shields.io/badge/Python-3.12-blue?style=flat-square&logo=python)](https://www.python.org/)
 [![Pytest](https://img.shields.io/badge/Pytest-8.1.1-green?style=flat-square&logo=pytest)](https://docs.pytest.org/en/stable/)
 [![Playwright](https://img.shields.io/badge/Playwright-1.43.0-purple?style=flat-square&logo=playwright)](https://playwright.dev/)
